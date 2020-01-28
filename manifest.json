@@ -1,5 +1,5 @@
 {
-    "name": "SharpSpring Email Block Recycler",
+    "name": "SHSP Email Block Recycler",
     "version": "0.1",
     "description": "Save email blocks to use in different emails within SharpSpring.",
     "permissions": [
