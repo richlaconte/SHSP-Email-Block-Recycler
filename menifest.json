@@ -1,0 +1,31 @@
+{
+    "name": "SharpSpring Email Block Recycler",
+    "version": "0.1",
+    "description": "Save email blocks to use in different emails within SharpSpring.",
+    "permissions": [
+        "activeTab",
+        "declarativeContent",
+        "storage"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "content.js"
+            ]
+        }
+    ],
+    "background": {
+        "scripts": [
+            "background.js"
+        ],
+        "persistent": false
+    },
+    "page_action": {
+        "default_popup": "popup.html"
+    },
+    "options_page": "options.html",
+    "manifest_version": 2
+}
