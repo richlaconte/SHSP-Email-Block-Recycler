@@ -1,32 +1,96 @@
-/*document.onmouseup = document.onkeyup = document.onseelctionchange = () => {
-    let content = window.getSelection().toString();
-    chrome.storage.sync.set({ content });
-};*/
+//let blocks = document.getElementById("previewEmail").contentWindow.document.getElementsByClassName("shsp-wireframe");
+//let block = [];
 
-let blocks = document.getElementById("previewEmail").contentWindow.document.getElementsByClassName("shsp-wireframe");
-let block = [];
+let main = () => {
+    let blocks = document.getElementById("previewEmail").contentWindow.document.querySelectorAll("[sh-layout]");
 
-// Cannot set more than 2 blocks to an array - error - "QUOTA_BYTS_PER_ITEM quota exceeded"
-// Instead need to try setting each block to its own variable.
+    console.log(blocks);
+    console.log(blocks.length);
+    console.log(blocks[0]);
+    blocks[0];
 
-/*for (let i = 0; i < blocks.length; i++) {
-    if (block.getElementsByClassName("full content")[0].parentElement.innerHTML.toString().length >= 5000) {
-        let name = "block" + "" + i;
-        block.push(name);
-        let block1 = block.getElementsByClassName("full content")[0].parentElement.innerHTML.toString().slice(0, 5000);
-        chrome.storage.sync.set({ name: block1 }, () => {
+    for (let i = 0; i < blocks.length; i++) {
+        console.log("blocks[" + i + "] length: " + blocks[i].innerHTML.toString().length);
+        //block1 = blocks[1].innerHTML.toString();
+        if (blocks[i].innerHTML.toString().length >= 25000) {
+
+        } else if (blocks[i].innerHTML.toString().length >= 20000) {
+            let blockString = blocks[i].innerHTML.toString().slice(0, 5000);
+            let block1String = blocks[i].innerHTML.toString().slice(5000, 10000);
+            let block2String = blocks[i].innerHTML.toString().slice(10000, 15000);
+            let block3String = blocks[i].innerHTML.toString().slice(15000, 20000)
+            let block4String = blocks[i].innerHTML.toString().slice(20000, blocks[i].length);
+            chrome.storage.sync.set({ ["block" + i + "String"]: blockString }, () => {
+            })
+            chrome.storage.sync.set({ ["block" + i + "1" + "String"]: block1String }, () => {
+            })
+            chrome.storage.sync.set({ ["block" + i + "2" + "String"]: block2String }, () => {
+            })
+            chrome.storage.sync.set({ ["block" + i + "3" + "String"]: block3String }, () => {
+            })
+            chrome.storage.sync.set({ ["block" + i + "4" + "String"]: block4String }, () => {
+            })
+        } else if (blocks[i].innerHTML.toString().length >= 15000) {
+            let blockString = blocks[i].innerHTML.toString().slice(0, 5000);
+            let block1String = blocks[i].innerHTML.toString().slice(5000, 10000);
+            let block2String = blocks[i].innerHTML.toString().slice(10000, 15000);
+            let block3String = blocks[i].innerHTML.toString().slice(15000, blocks[i].length);
+            chrome.storage.sync.set({ ["block" + i + "String"]: blockString }, () => {
+            })
+            chrome.storage.sync.set({ ["block" + i + "1" + "String"]: block1String }, () => {
+            })
+            chrome.storage.sync.set({ ["block" + i + "2" + "String"]: block2String }, () => {
+            })
+            chrome.storage.sync.set({ ["block" + i + "3" + "String"]: block3String }, () => {
+            })
+        } else if (blocks[i].innerHTML.toString().length >= 10000) {
+            let blockString = blocks[i].innerHTML.toString().slice(0, 5000);
+            let block1String = blocks[i].innerHTML.toString().slice(5000, 10000);
+            let block2String = blocks[i].innerHTML.toString().slice(10000, blocks[i].length);
+            chrome.storage.sync.set({ ["block" + i + "String"]: blockString }, () => {
+            })
+            chrome.storage.sync.set({ ["block" + i + "1" + "String"]: block1String }, () => {
+            })
+            chrome.storage.sync.set({ ["block" + i + "2" + "String"]: block2String }, () => {
+            })
+        } else if (blocks[i].innerHTML.toString().length >= 5000) {
+            let blockString = blocks[i].innerHTML.toString().slice(0, 5000);
+            let block1String = blocks[i].innerHTML.toString().slice(5000, blocks[i].length);
+            chrome.storage.sync.set({ ["block" + i + "String"]: blockString }, () => {
+            })
+            chrome.storage.sync.set({ ["block" + i + "1" + "String"]: block1String }, () => {
+            })
+        } else {
+            let block1 = blocks[i].innerHTML.toString();
+            chrome.storage.sync.set({ ["block" + i + "String"]: block1 }, () => {
+            })
+        }
+    }
+}
+
+window.setTimeout(main, 1000);
+/*
+if (blocks[0]) {
+    console.log("blocks[0] length: " + blocks[0].innerHTML.toString().length);
+    //block1 = blocks[1].innerHTML.toString();
+    if (blocks[0].innerHTML.toString().length >= 5000) {
+        let block1String = blocks[0].innerHTML.toString().slice(0, 5000);
+
+        let block12 = blocks[0].innerHTML.toString().slice(5000, blocks[0].length);
+        chrome.storage.sync.set({ ["block" + i + "String"]: block1String }, () => {
         })
-        name = "block" + "" + i + "" + "2";
-        block.push(name);
-        let block2 = block.getElementsByClassName("full content")[0].parentElement.innerHTML.toString().slice(5000, block.length);
-        chrome.storage.sync.set({ block: block2 }, () => {
+        chrome.storage.sync.set({ block02String: block12 }, () => {
         })
     } else {
-        let block1 = block.getElementsByClassName("full content")[0].parentElement.innerHTML.toString();
-        chrome.storage.sync.set({ block1String: block1 }, () => {
+        let block1 = blocks[0].innerHTML.toString();
+        chrome.storage.sync.set({ block0String: block1 }, () => {
         })
     }
-}*/
+}
+*/
+
+// V1
+/*
 if (blocks[0]) {
     if (blocks[0].getElementsByClassName("full").length > 0) {
         console.log("blocks[0] length: " + blocks[0].getElementsByClassName("full")[0].parentElement.innerHTML.toString().length);
@@ -85,8 +149,6 @@ if (blocks[2]) {
         }
     }
 }
-
-/*
-if (blocks[2])
 */
 
+// V2

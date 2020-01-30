@@ -62,18 +62,45 @@ renderCurrentBlock();
 
 chrome.storage.sync.get(stored => {
     code0.innerHTML = stored.block0String;
-    if (stored.block02String) {
-        code0.innerHTML += stored.block02String;
+    if (stored.block01String) {
+        code0.innerHTML += stored.block01String;
+        if (stored.block02String) {
+            code0.innerHTML += stored.block02String;
+            if (stored.block03String) {
+                code0.innerHTML += stored.block03String;
+                if (stored.block04String) {
+                    code0.innerHTML += stored.block04String;
+                }
+            }
+        }
     }
+
 
     code1.innerHTML = stored.block1String;
-    if (stored.block12String) {
-        code1.innerHTML += stored.block12String;
+    if (stored.block11String) {
+        code1.innerHTML += stored.block11String;
+        if (stored.block12String) {
+            code1.innerHTML += stored.block12String;
+            if (stored.block13String) {
+                code1.innerHTML += stored.block13String;
+                if (stored.block14String) {
+                    code1.innerHTML += stored.block14String;
+                }
+            }
+        }
     }
-    code1.innerHTML += stored.block12String;
 
     code2.innerHTML = stored.block2String;
-    if (stored.block22String) {
-        code2.innerHTML += stored.block22String;
+    if (stored.block21String) {
+        code2.innerHTML += stored.block21String;
+        if (stored.block22String) {
+            code2.innerHTML += stored.block22String;
+            if (stored.block23String) {
+                code2.innerHTML += stored.block23String;
+                if (stored.block24String) {
+                    code2.innerHTML += stored.block24String;
+                }
+            }
+        }
     }
 });
