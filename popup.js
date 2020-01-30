@@ -19,14 +19,11 @@ paste.onclick = (element) => {
 };
 
 let currentBlock = 0;
-
-let code0 = document.getElementById('code0');
-let code1 = document.getElementById('code1');
-let code2 = document.getElementById('code2');
-let code3 = document.getElementById('code3');
+let code = [];
+let blockTotal;
 
 next.onclick = () => {
-    if (currentBlock < 3) {
+    if (currentBlock < blockTotal) {
         currentBlock++;
         renderCurrentBlock();
     }
@@ -39,68 +36,37 @@ previous.onclick = () => {
 }
 
 let hideBlocks = () => {
-    code0.style.display = "none";
-    code1.style.display = "none";
-    code2.style.display = "none";
-    code3.style.display = "none";
+    for (let i = 0; i < blockTotal; i++) {
+        document.getElementById("code" + "" + i).style.display = "none";
+    }
 }
 
 let renderCurrentBlock = () => {
     hideBlocks();
-    if (currentBlock === 0) {
-        code0.style.display = "block";
-    } else if (currentBlock === 1) {
-        code1.style.display = "block";
-    } else if (currentBlock === 2) {
-        code2.style.display = "block";
-    } else if (currentBlock === 3) {
-        code3.style.display = "block";
-    }
+    document.getElementById("code" + "" + currentBlock).style.display = "block";
 }
 
-renderCurrentBlock();
-
 chrome.storage.sync.get(stored => {
-    code0.innerHTML = stored.block0String;
-    if (stored.block01String) {
-        code0.innerHTML += stored.block01String;
-        if (stored.block02String) {
-            code0.innerHTML += stored.block02String;
-            if (stored.block03String) {
-                code0.innerHTML += stored.block03String;
-                if (stored.block04String) {
-                    code0.innerHTML += stored.block04String;
+    blockTotal = stored.blockTotal;
+    for (let i = 0; i < stored.blockTotal; i++) {
+        let div = document.createElement("DIV");
+        div.id = "code" + "" + i;
+        div.style.display = "none";
+        div.innerHTML = stored["block" + "" + i + "" + "String"];
+        if (stored["block" + i + "1String"]) {
+            div.innerHTML += stored["block" + i + "1String"];
+            if (stored["block" + i + "2String"]) {
+                div.innerHTML += stored["block" + i + "2String"];
+                if (stored["block" + i + "3String"]) {
+                    div.innerHTML += stored["block" + i + "3String"];
+                    if (stored["block" + i + "4String"]) {
+                        div.innerHTML += stored["block" + i + "4String"];
+                    }
                 }
             }
         }
+        document.getElementById("codeArea").appendChild(div);
+        code.push(div);
     }
-
-
-    code1.innerHTML = stored.block1String;
-    if (stored.block11String) {
-        code1.innerHTML += stored.block11String;
-        if (stored.block12String) {
-            code1.innerHTML += stored.block12String;
-            if (stored.block13String) {
-                code1.innerHTML += stored.block13String;
-                if (stored.block14String) {
-                    code1.innerHTML += stored.block14String;
-                }
-            }
-        }
-    }
-
-    code2.innerHTML = stored.block2String;
-    if (stored.block21String) {
-        code2.innerHTML += stored.block21String;
-        if (stored.block22String) {
-            code2.innerHTML += stored.block22String;
-            if (stored.block23String) {
-                code2.innerHTML += stored.block23String;
-                if (stored.block24String) {
-                    code2.innerHTML += stored.block24String;
-                }
-            }
-        }
-    }
+    renderCurrentBlock();
 });
