@@ -15,6 +15,11 @@ copy.onclick = () => {
     
 }*/
 
+let remove_linebreaks = (str) => {
+    let str2 = str.replace("'", "");
+    return str2.replace(/[\r\n]+/gm, "");
+}
+
 paste.onclick = () => {
     console.log(copiedBlock);
     if (copiedBlock !== "") {
@@ -22,7 +27,7 @@ paste.onclick = () => {
             chrome.tabs.executeScript(
                 tabs[0].id,
                 //{ code: 'document.body.style.backgroundColor = "' + color + '";' });
-                { code: 'document.getElementById("previewEmail").contentWindow.document.querSelectorAll("[sh-layout]")[0] = "' + copiedBlock + '";' });
+                { code: "document.getElementById('previewEmail').contentWindow.document.querySelectorAll('[sh-layout]')[0].parentElement.innerHTML += '" + remove_linebreaks(copiedBlock) + "';" });
         });
     }
 };
