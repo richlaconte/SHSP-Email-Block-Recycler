@@ -4,26 +4,35 @@ let paste = document.getElementById('paste');
 let previous = document.getElementById('previous');
 let next = document.getElementById('next');
 
-paste.onclick = (element) => {
-    console.log("test");
-    let color = element.target.value;
-    let test = () => {
-        console.log("test has been run");
+let copiedBlock = "";
+
+copy.addEventListener("click", () => {
+    copiedBlock = document.getElementById("code" + currentBlock).innerHTML.toString();
+    console.log(copiedBlock);
+})
+/*
+copy.onclick = () => {
+    
+}*/
+
+paste.onclick = () => {
+    console.log(copiedBlock);
+    if (copiedBlock !== "") {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            chrome.tabs.executeScript(
+                tabs[0].id,
+                //{ code: 'document.body.style.backgroundColor = "' + color + '";' });
+                { code: 'document.getElementById("previewEmail").contentWindow.document.querSelectorAll("[sh-layout]")[0] = "' + copiedBlock + '";' });
+        });
     }
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        chrome.tabs.executeScript(
-            tabs[0].id,
-            //{ code: 'document.body.style.backgroundColor = "' + color + '";' });
-            { code: 'document.getElementById("previewEmail").contentWindow.document.getElementsByClassName("shsp-wireframe")[0].innerHTML = "test";' });
-    });
 };
 
 let currentBlock = 0;
 let code = [];
-let blockTotal;
+let blockTotal = 0;
 
 next.onclick = () => {
-    if (currentBlock < blockTotal) {
+    if (currentBlock < blockTotal - 1) {
         currentBlock++;
         renderCurrentBlock();
     }
@@ -47,8 +56,8 @@ let renderCurrentBlock = () => {
 }
 
 chrome.storage.sync.get(stored => {
-    blockTotal = stored.blockTotal;
     for (let i = 0; i < stored.blockTotal; i++) {
+        blockTotal++;
         let div = document.createElement("DIV");
         div.id = "code" + "" + i;
         div.style.display = "none";
