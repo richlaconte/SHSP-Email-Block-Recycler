@@ -10,7 +10,8 @@
     "content_scripts": [
         {
             "matches": [
-                "<all_urls>"
+                "*://*.marketingautomation.services/email/edit/*",
+                "*://*.marketingautomation.services/email/editTemplate/*"
             ],
             "js": [
                 "content.js"
