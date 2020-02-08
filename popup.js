@@ -21,6 +21,7 @@ let remove_linebreaks = (str) => {
     return str2.replace(/[\r\n]+/gm, "");
 }
 
+/*
 paste.onclick = () => {
     console.log(copiedBlock);
     if (copiedBlock !== "") {
@@ -32,6 +33,7 @@ paste.onclick = () => {
         });
     }
 };
+*/
 
 let currentBlock = 0;
 let code = [];
