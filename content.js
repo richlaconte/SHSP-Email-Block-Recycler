@@ -1,6 +1,6 @@
 const parse = (html) => {
     let base = html;
-    let test = base.search('plzwork1');
+    let test = base.search('tracked?');
     let found = base.substr(test, 80);
     let goodStuff = found.split('"')[2];
     templateID = goodStuff.split('/')[3];
@@ -12,6 +12,29 @@ async function get(url) {
 
     return text;
 }
+
+let script = document.createElement("SCRIPT");
+script.innerHTML = "let testScript = () => {console.log('it worked!!')}";
+script.innerHTML += `
+document.addEventListener('setEmail', function(e) {
+    window.myData = e.detail;
+    setEmail(window.myData.templateID, window.myData.templateHTML, window.myData.addedBlocksHTML);
+})
+const setEmail = (templateID, templateHTML, addedBlocksHTML) => {
+    window.api.setEmail(templateID, {
+        "unsubscribeCategoryID": 0,
+        "subject": "tracked?",
+        "dynamicSubject": "",
+        "dynamicSubjectAudienceID": "",
+        "fromName": "Market Marketing",
+        "fromEmail": "richl.laconte@test.com",
+        "title": "tracked?",
+        "description": "",
+        "emailHTML": templateHTML + "" + addedBlocksHTML
+    }, "test", "test", "test", (e) => { console.log(e) }, null);
+}
+`
+document.getElementsByTagName("head")[0].appendChild(script);
 
 let templateHTML;
 let addedBlocksHTML;
@@ -27,9 +50,24 @@ get('/email/').then(text => {
             let end = res.search('"emailText":');
             let found = res.substr((start + 13), (end - start - 15));
             templateHTML = found;
+            console.log(templateID);
+            setInWindowValues(templateID, templateHTML, addedBlocksHTML);
         })
 })
 
+
+let setInWindowValues = (templateID, templateHTML, addedBlocksHTML) => {
+    let script;
+    if (document.getElementById("blockRecyclerVars")) {
+        script = document.getElementById("blockRecyclerVars");
+        script.innerHTML = `templateID = ${templateID}; templateHTML = \`${templateHTML}\`; addedBlocksHTML = \`${addedBlocksHTML}\`;`;
+    } else {
+        script = document.createElement("SCRIPT");
+        script.id = "blockRecyclerVars";
+        script.innerHTML = `let templateID = ${templateID}; let templateHTML = \`${templateHTML}\`; let addedBlocksHTML = \`${addedBlocksHTML}\`;`;
+        document.getElementsByTagName("head")[0].appendChild(script);
+    }
+}
 
 
 const setStrings = (index, div) => {
@@ -70,6 +108,11 @@ const main = () => {
     })
 }
 
+let remove_linebreaks = (str) => {
+    let str2 = str.replace(/'/g, "\\'");
+    return str2.replace(/[\r\n]+/gm, "");
+}
+
 const checkForControls = (block, number) => {
     if (block.getElementsByClassName("email-block-controls-recycle").length > 0) {
         return;
@@ -82,8 +125,9 @@ const checkForControls = (block, number) => {
             emailControls.getElementsByClassName("email-block-controls-clone")[0].outerHTML = newButton;
             emailControls.getElementsByClassName("email-block-controls-recycle")[0].addEventListener("click", () => {
                 console.log("clicked block " + number);
-                let html = document.getElementById("previewEmail").contentWindow.document.querySelectorAll("[sh-layout]")[number].outerHTML;
+                let html = remove_linebreaks(document.getElementById("previewEmail").contentWindow.document.querySelectorAll("[sh-layout]")[number].outerHTML);
                 addedBlocksHTML += html;
+                setInWindowValues(templateID, templateHTML, addedBlocksHTML);
                 setEmail();
             })
         }
@@ -91,17 +135,13 @@ const checkForControls = (block, number) => {
 }
 
 const setEmail = () => {
-    window.api.setEmail(templateID, {
-        "unsubscribeCategoryID": 0,
-        "subject": "tracked?",
-        "dynamicSubject": "",
-        "dynamicSubjectAudienceID": "",
-        "fromName": "Market Marketing",
-        "fromEmail": "richl.laconte@test.com",
-        "title": "tracked?",
-        "description": "",
-        "emailHTML": templateHTML + "" + addedBlocksHTML
-    }, "test", "test", "test", (e) => { console.log(e) }, null);
+    document.dispatchEvent(new CustomEvent('setEmail', {
+        'detail': {
+            'templateID': templateID,
+            'templateHTML': templateHTML,
+            'addedBlocksHTML': addedBlocksHTML
+        }
+    }))
 }
 
 window.setTimeout(main, 1000);
