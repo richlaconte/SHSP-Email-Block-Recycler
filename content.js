@@ -45,7 +45,9 @@ let templateBlocks = [];
 let addedBlocksHTML;
 let templateID;
 let log = () => {
-    console.log(templateHTML);
+
+    console.log(templateBlocks);
+    addTab();
     addDragAndDrops(templateBlocks);
 }
 window.setTimeout(log, 3000);
@@ -58,6 +60,9 @@ get('/email/').then(text => {
             templateHTML = removeEscapes(found);
 
             let splitHTML = templateHTML.split(`<div sh-template-name="shsp-wireframe"`);
+            console.log(splitHTML);
+
+            templateHTML = "";
 
             for (let i = 1; i < splitHTML.length; i++) {
                 templateHTML += `<div sh-template-name="shsp-wireframe"`;
@@ -113,8 +118,6 @@ const setStrings = (index, div) => {
 const main = () => {
     const blocks = document.getElementById("previewEmail").contentWindow.document.querySelectorAll("[sh-layout]");
 
-    addTab();
-
     for (let i = 0; i < blocks.length; i++) {
         blocks[i].addEventListener("mouseover", (e) => {
 
@@ -149,13 +152,18 @@ const addTab = () => {
 const addDragAndDrops = (blocks) => {
     let subTabs = document.getElementsByClassName("sub-tabs")[0];
 
+    let temp = `<div id="dragonTestPane" class="pane-content hide active" style="display: none;">
+    <ul class="email-drag-and-drop-items">`;
+
     for (let i = 0; i < blocks.length; i++) {
-        subTabs.innerHTML += `<div id="dragonTestPane" class="pane-content hide active" style="display: none;">
-    <ul class="email-drag-and-drop-items"><li class="email-drag-item email-drag-content ui-draggable ui-draggable-handle" data-tpl="emailLayout-content-block-edfed8b1-0988-4768-a1d1-7bfa727c00af" data-guid="edfed8b1-0988-4768-a1d1-7bfa727c00af">
+        temp += `<li class="email-drag-item email-drag-content ui-draggable ui-draggable-handle" data-tpl="emailLayout-content-block-edfed8b1-0988-4768-a1d1-7bfa727c00af" data-guid="edfed8b1-0988-4768-a1d1-7bfa727c00af">
                 <img src="/includes/img/emails/drag/content-block/btn.svg" width="200">
                 <div>test</div>
-            </li></ul></div>`;
+            </li>`;
     }
+    temp += `</ul></div>`;
+
+    subTabs.innerHTML += temp;
 }
 
 const checkForControls = (block, number) => {
@@ -173,9 +181,11 @@ const checkForControls = (block, number) => {
                 let html = document.getElementById("previewEmail").contentWindow.document.querySelectorAll("[sh-layout]")[number].outerHTML;
                 addedBlocksHTML += html;
 
+                console.log(addedBlocksHTML);
 
+                let test = templateHTML + "" + addedBlocksHTML;
 
-                setInWindowValues(templateID, templateHTML, addedBlocksHTML);
+                setInWindowValues(templateID, templateHTML, test);
                 setEmail();
             })
         }
@@ -198,3 +208,6 @@ let layouts = document.getElementById('previewEmail').contentWindow.document.get
 for (let i = 0; i < layouts.length; i++) { layouts[i].outerHTML += '<a title="Duplicate Block" class="single-control testBtn" style="color: rgb(0, 0, 238);">test</a>'; };
 let testBtn = document.getElementsByClassName("testBtn"); for (let i = 0; i < testBtn.length; i++) { testBtn[i].addEventListener("click", () => { console.log("clicked button") }) };
 */
+
+
+
