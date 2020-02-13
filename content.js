@@ -46,6 +46,7 @@ let addedBlocksHTML;
 let templateID;
 let log = () => {
     console.log(templateHTML);
+    addDragAndDrops(templateBlocks);
 }
 window.setTimeout(log, 3000);
 get('/email/').then(text => {
@@ -112,6 +113,8 @@ const setStrings = (index, div) => {
 const main = () => {
     const blocks = document.getElementById("previewEmail").contentWindow.document.querySelectorAll("[sh-layout]");
 
+    addTab();
+
     for (let i = 0; i < blocks.length; i++) {
         blocks[i].addEventListener("mouseover", (e) => {
 
@@ -137,6 +140,24 @@ let removeEscapes = (str) => {
     return str2;
 }
 
+const addTab = () => {
+    let tabs = document.getElementsByClassName("pane-tabs sub-pane-tabs")[0];
+    tabs.innerHTML += `<a href="#dragonTestPane" id="dragonTestPaneTab" class="hide-history" data-toggle="tab" data-original-title="">
+    <i class="icon-refresh icon-spin"></i> Saved Blocks                    </a>`;
+}
+
+const addDragAndDrops = (blocks) => {
+    let subTabs = document.getElementsByClassName("sub-tabs")[0];
+
+    for (let i = 0; i < blocks.length; i++) {
+        subTabs.innerHTML += `<div id="dragonTestPane" class="pane-content hide active" style="display: none;">
+    <ul class="email-drag-and-drop-items"><li class="email-drag-item email-drag-content ui-draggable ui-draggable-handle" data-tpl="emailLayout-content-block-edfed8b1-0988-4768-a1d1-7bfa727c00af" data-guid="edfed8b1-0988-4768-a1d1-7bfa727c00af">
+                <img src="/includes/img/emails/drag/content-block/btn.svg" width="200">
+                <div>test</div>
+            </li></ul></div>`;
+    }
+}
+
 const checkForControls = (block, number) => {
     if (block.getElementsByClassName("email-block-controls-recycle").length > 0) {
         return;
@@ -144,7 +165,7 @@ const checkForControls = (block, number) => {
         const emailControls = block.getElementsByClassName("email-layout-controls-right")[0];
 
         if (emailControls) {
-            const newButton = '<a title="Duplicate Block" class="email-block-controls-clone single-control"><i class="icon-copy"></i></a><a title="Recycle Block" class="email-block-controls-recycle single-control" style="color: rgb(0, 0, 238);">test</a>';
+            const newButton = '<a title="Duplicate Block" class="email-block-controls-clone single-control"><i class="icon-copy"></i></a><a title="Recycle Block" class="email-block-controls-recycle single-control" style="color: rgb(0, 0, 238);"><i class="icon-refresh icon-spin"></i></a>';
             //emailControls[i].innerHTML += newButton;
             emailControls.getElementsByClassName("email-block-controls-clone")[0].outerHTML = newButton;
             emailControls.getElementsByClassName("email-block-controls-recycle")[0].addEventListener("click", () => {
