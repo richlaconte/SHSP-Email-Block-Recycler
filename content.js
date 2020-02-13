@@ -1,8 +1,12 @@
 const parse = (html) => {
+    let name = 'shspRecyclerBlockStorage0001';
     let base = html;
-    let test = base.search('tracked?');
-    let found = base.substr(test, 80);
+    let test = base.search(name);
+    console.log(test);
+    let found = base.substr(test, (test + name.length));
+    console.log(found);
     let goodStuff = found.split('"')[2];
+    console.log(goodStuff);
     templateID = goodStuff.split('/')[3];
     return goodStuff;
 }
@@ -28,15 +32,16 @@ const setEmail = (templateID, templateHTML, addedBlocksHTML) => {
         "dynamicSubjectAudienceID": "",
         "fromName": "Market Marketing",
         "fromEmail": "richl.laconte@test.com",
-        "title": "tracked?",
+        "title": "shspRecyclerBlockStorage0001",
         "description": "",
-        "emailHTML": templateHTML + "" + addedBlocksHTML
+        "emailHTML": addedBlocksHTML
     }, "test", "test", "test", (e) => { console.log(e) }, null);
 }
 `
 document.getElementsByTagName("head")[0].appendChild(script);
 
 let templateHTML;
+let templateBlocks = [];
 let addedBlocksHTML;
 let templateID;
 let log = () => {
@@ -46,10 +51,22 @@ window.setTimeout(log, 3000);
 get('/email/').then(text => {
     get(parse(text))
         .then(res => {
-            let start = res.search('"emailHTML":');
-            let end = res.search('"emailText":');
-            let found = res.substr((start + 13), (end - start - 15));
-            templateHTML = found;
+            let start = res.search(`"emailHTML":`);
+            let end = res.search(`"emailText":`);
+            let found = res.substr((start + 13), (end - 15));
+            templateHTML = removeEscapes(found);
+
+            let splitHTML = templateHTML.split(`<div sh-template-name="shsp-wireframe"`);
+
+            for (let i = 1; i < splitHTML.length; i++) {
+                templateHTML += `<div sh-template-name="shsp-wireframe"`;
+                templateHTML += splitHTML[i];
+
+                templateBlocks[i - 1] = `<div sh-template-name="shsp-wireframe"`;
+                templateBlocks[i - 1] += splitHTML[i];
+            }
+
+            console.log(templateBlocks);
             console.log(templateID);
             setInWindowValues(templateID, templateHTML, addedBlocksHTML);
         })
@@ -108,9 +125,16 @@ const main = () => {
     })
 }
 
+/*
 let remove_linebreaks = (str) => {
     let str2 = str.replace(/'/g, "\\'");
     return str2.replace(/[\r\n]+/gm, "");
+}*/
+
+let removeEscapes = (str) => {
+    let str3 = str.replace(/\\n/g, '');
+    let str2 = str3.replace(/\\/g, '');
+    return str2;
 }
 
 const checkForControls = (block, number) => {
@@ -125,8 +149,11 @@ const checkForControls = (block, number) => {
             emailControls.getElementsByClassName("email-block-controls-clone")[0].outerHTML = newButton;
             emailControls.getElementsByClassName("email-block-controls-recycle")[0].addEventListener("click", () => {
                 console.log("clicked block " + number);
-                let html = remove_linebreaks(document.getElementById("previewEmail").contentWindow.document.querySelectorAll("[sh-layout]")[number].outerHTML);
+                let html = document.getElementById("previewEmail").contentWindow.document.querySelectorAll("[sh-layout]")[number].outerHTML;
                 addedBlocksHTML += html;
+
+
+
                 setInWindowValues(templateID, templateHTML, addedBlocksHTML);
                 setEmail();
             })

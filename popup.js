@@ -15,11 +15,11 @@ copy.addEventListener("click", () => {
 copy.onclick = () => {
     
 }*/
-
+/*
 let remove_linebreaks = (str) => {
     let str2 = str.replace(/'/g, "\\'");
     return str2.replace(/[\r\n]+/gm, "");
-}
+}*/
 
 /*
 paste.onclick = () => {
