@@ -1,2 +1,2 @@
 # SHSP Email Block Recycler
-Chrome extension to copy SharpSpring email blocks and paste them into other emails.
+Chrome extension to add functionality to SharpSpring that allows custom email blocks to be saved and re-used in other emails.
