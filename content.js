@@ -37,6 +37,19 @@ const setEmail = (templateID, templateHTML, addedBlocksHTML) => {
         "emailHTML": templateHTML + "" + addedBlocksHTML
     }, "test", "test", "test", (e) => { console.log(e) }, null);
 }
+
+$(document).ajaxSuccess(function (event, xhr, settings) {
+    console.log("Triggered ajaxSuccess handler.");
+    console.log(settings.url);
+
+    if (settings.url === "/api/setEmail") {
+        console.log("dispatching setButtons");
+        document.dispatchEvent(new CustomEvent('setButtons', {
+            'detail': {
+            }
+        }))
+    }
+});
 `
 document.getElementsByTagName("head")[0].appendChild(script);
 
@@ -44,6 +57,12 @@ let templateHTML;
 let templateBlocks = [];
 let addedBlocksHTML;
 let templateID;
+
+document.addEventListener('setButtons', () => {
+    console.log("heard dispatch, calling setButtons");
+    setButtons();
+})
+
 let log = () => {
 
     console.log(templateBlocks);
@@ -108,7 +127,7 @@ let setInWindowValues = (templateID, templateHTML, addedBlocksHTML) => {
     }
 }
 
-
+/*
 const setStrings = (index, div) => {
     let string = div.outerHTML.toString();
 
@@ -130,6 +149,7 @@ const setStrings = (index, div) => {
     }
 
 }
+*/
 
 const main = () => {
     const blocks = document.getElementById("previewEmail").contentWindow.document.querySelectorAll("[sh-layout]");
@@ -148,6 +168,23 @@ const main = () => {
 
     chrome.storage.sync.set({ blockTotal: blocks.length }, () => {
     })
+}
+
+const setButtons = () => {
+    const blocks = document.getElementById("previewEmail").contentWindow.document.querySelectorAll("[sh-layout]");
+    for (let i = 0; i < blocks.length; i++) {
+        blocks[i].addEventListener("mouseover", (e) => {
+
+            checkForControls(blocks[i], i);
+        })
+
+        /*setStrings(i, blocks[i]);*/
+    }
+}
+
+const hitSave = () => {
+    let saveBtn = document.getElementById("saveEmail");
+    saveBtn.click();
 }
 
 /*
@@ -207,23 +244,6 @@ const addDragAndDrops = (blocks) => {
     hitSave();
 }
 
-const hitSave = () => {
-    let saveBtn = document.getElementById("saveEmail");
-    saveBtn.click();
-
-    window.setTimeout(() => {
-
-        const blocks = document.getElementById("previewEmail").contentWindow.document.querySelectorAll("[sh-layout]");
-        for (let i = 0; i < blocks.length; i++) {
-            blocks[i].addEventListener("mouseover", (e) => {
-
-                checkForControls(blocks[i], i);
-            })
-
-            setStrings(i, blocks[i]);
-        }
-    }, 5000);
-}
 
 const checkForControls = (block, number) => {
     if (block.getElementsByClassName("email-block-controls-recycle").length > 0) {
