@@ -34,7 +34,7 @@ const setEmail = (templateID, templateHTML, addedBlocksHTML) => {
         "fromEmail": "richl.laconte@test.com",
         "title": "shspRecyclerBlockStorage0001",
         "description": "",
-        "emailHTML": addedBlocksHTML
+        "emailHTML": templateHTML + "" + addedBlocksHTML
     }, "test", "test", "test", (e) => { console.log(e) }, null);
 }
 `
@@ -65,7 +65,7 @@ get('/email/').then(text => {
             templateHTML = "";
 
             for (let i = 1; i < splitHTML.length; i++) {
-                if (i === splitHTML.length - 1) {
+                if (splitHTML[i].search(`","emailText":"","createTimestamp":"`)) {
                     //console.log(splitHTML[i]);
 
                     let html = splitHTML[i].split(`","emailText":"","createTimestamp":"`);
@@ -222,7 +222,7 @@ const hitSave = () => {
 
             setStrings(i, blocks[i]);
         }
-    }, 3000);
+    }, 5000);
 }
 
 const checkForControls = (block, number) => {
