@@ -65,11 +65,27 @@ get('/email/').then(text => {
             templateHTML = "";
 
             for (let i = 1; i < splitHTML.length; i++) {
-                templateHTML += `<div sh-template-name="shsp-wireframe"`;
-                templateHTML += splitHTML[i];
+                if (i === splitHTML.length - 1) {
+                    //console.log(splitHTML[i]);
 
-                templateBlocks[i - 1] = `<div sh-template-name="shsp-wireframe"`;
-                templateBlocks[i - 1] += splitHTML[i];
+                    let html = splitHTML[i].split(`","emailText":"","createTimestamp":"`);
+                    //console.log(html);
+                    templateHTML += `<div sh-template-name="shsp-wireframe"`;
+                    templateHTML += html[0];
+                    //console.log(html[0]);
+                    //console.log(html[1]);
+                    console.log(templateHTML);
+
+                    templateBlocks[i - 1] = `<div sh-template-name="shsp-wireframe"`;
+                    templateBlocks[i - 1] += html[0];
+
+                } else {
+                    templateHTML += `<div sh-template-name="shsp-wireframe"`;
+                    templateHTML += splitHTML[i];
+
+                    templateBlocks[i - 1] = `<div sh-template-name="shsp-wireframe"`;
+                    templateBlocks[i - 1] += splitHTML[i];
+                }
             }
 
             console.log(templateBlocks);
@@ -118,6 +134,8 @@ const setStrings = (index, div) => {
 const main = () => {
     const blocks = document.getElementById("previewEmail").contentWindow.document.querySelectorAll("[sh-layout]");
 
+    // Moved this to hitSave()
+    /*
     for (let i = 0; i < blocks.length; i++) {
         blocks[i].addEventListener("mouseover", (e) => {
 
@@ -126,6 +144,7 @@ const main = () => {
 
         setStrings(i, blocks[i]);
     }
+    */
 
     chrome.storage.sync.set({ blockTotal: blocks.length }, () => {
     })
@@ -145,25 +164,65 @@ let removeEscapes = (str) => {
 
 const addTab = () => {
     let tabs = document.getElementsByClassName("pane-tabs sub-pane-tabs")[0];
-    tabs.innerHTML += `<a href="#dragonTestPane" id="dragonTestPaneTab" class="hide-history" data-toggle="tab" data-original-title="">
+    tabs.innerHTML += `<a href="#dragonBlockPane" id="dragonBlockPaneTab" class="hide-history" data-toggle="tab" data-original-title="">
     <i class="icon-refresh icon-spin"></i> Saved Blocks                    </a>`;
 }
 
 const addDragAndDrops = (blocks) => {
+    // ***************
+    // Add the handles
+    // ***************
     let subTabs = document.getElementsByClassName("sub-tabs")[0];
 
-    let temp = `<div id="dragonTestPane" class="pane-content hide active" style="display: none;">
+    let temp = `<div id="dragonBlockPane" class="pane-content hide active" style="display: none;">
     <ul class="email-drag-and-drop-items">`;
 
     for (let i = 0; i < blocks.length; i++) {
-        temp += `<li class="email-drag-item email-drag-content ui-draggable ui-draggable-handle" data-tpl="emailLayout-content-block-edfed8b1-0988-4768-a1d1-7bfa727c00af" data-guid="edfed8b1-0988-4768-a1d1-7bfa727c00af">
-                <img src="/includes/img/emails/drag/content-block/btn.svg" width="200">
-                <div>test</div>
-            </li>`;
+        temp += `<li class="email-drag-item email-drag-layout ui-draggable ui-draggable-handle" data-tpl="emailLayout-wireframe-blockRecycler` + i + `">
+        <img src="/includes/img/emails/drag/wireframe/text.svg" width="200">
+        <div>Block` + i + `</div>
+    </li>`;
     }
     temp += `</ul></div>`;
 
     subTabs.innerHTML += temp;
+
+    // ***************
+    // Add the scripts
+    // ***************
+    let body = document.getElementsByTagName("BODY")[0];
+    for (let i = 0; i < blocks.length; i++) {
+        let html = `<script id="emailLayout-wireframe-blockRecycler` + i + `" type="text/template">`;
+        html += blocks[i];
+        html += `</script>`;
+
+        let script = document.createElement("SCRIPT");
+        body.appendChild(script);
+        script.outerHTML = html;
+    }
+
+    // *******************
+    // Hit the save button
+    // *******************
+    hitSave();
+}
+
+const hitSave = () => {
+    let saveBtn = document.getElementById("saveEmail");
+    saveBtn.click();
+
+    window.setTimeout(() => {
+
+        const blocks = document.getElementById("previewEmail").contentWindow.document.querySelectorAll("[sh-layout]");
+        for (let i = 0; i < blocks.length; i++) {
+            blocks[i].addEventListener("mouseover", (e) => {
+
+                checkForControls(blocks[i], i);
+            })
+
+            setStrings(i, blocks[i]);
+        }
+    }, 3000);
 }
 
 const checkForControls = (block, number) => {
