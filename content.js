@@ -42,12 +42,16 @@ $(document).ajaxSuccess(function (event, xhr, settings) {
     console.log("Triggered ajaxSuccess handler.");
     console.log(settings.url);
 
+
     if (settings.url === "/api/setEmail") {
         console.log("dispatching setButtons");
         document.dispatchEvent(new CustomEvent('setButtons', {
             'detail': {
             }
         }))
+    }
+    if (settings.url === "/email/edit/") {
+        cnosole.log("edit email called");
     }
 });
 `
@@ -63,13 +67,9 @@ document.addEventListener('setButtons', () => {
     setButtons();
 })
 
-let log = () => {
-
-    console.log(templateBlocks);
-    addTab();
-    addDragAndDrops(templateBlocks);
-}
-window.setTimeout(log, 3000);
+// ************************
+// Get storage email HTML
+// ************************
 get('/email/').then(text => {
     get(parse(text))
         .then(res => {
@@ -110,6 +110,9 @@ get('/email/').then(text => {
             console.log(templateBlocks);
             console.log(templateID);
             setInWindowValues(templateID, templateHTML, addedBlocksHTML);
+
+            addTab();
+            addDragAndDrops(templateBlocks);
         })
 })
 
@@ -127,49 +130,6 @@ let setInWindowValues = (templateID, templateHTML, addedBlocksHTML) => {
     }
 }
 
-/*
-const setStrings = (index, div) => {
-    let string = div.outerHTML.toString();
-
-    let number = 0;
-
-    let charStart = 0;
-    let charEnd = 5000;
-
-    chrome.storage.sync.set({ ["block" + "" + index + "" + number]: string.slice(charStart, charEnd) }, () => {
-    })
-
-    while (string[charEnd]) {
-        number++;
-        charStart += 5000;
-        charEnd += 5000;
-
-        chrome.storage.sync.set({ ["block" + "" + index + "" + number]: string.slice(charStart, charEnd) }, () => {
-        })
-    }
-
-}
-*/
-
-const main = () => {
-    const blocks = document.getElementById("previewEmail").contentWindow.document.querySelectorAll("[sh-layout]");
-
-    // Moved this to hitSave()
-    /*
-    for (let i = 0; i < blocks.length; i++) {
-        blocks[i].addEventListener("mouseover", (e) => {
-
-            checkForControls(blocks[i], i);
-        })
-
-        setStrings(i, blocks[i]);
-    }
-    */
-
-    chrome.storage.sync.set({ blockTotal: blocks.length }, () => {
-    })
-}
-
 const setButtons = () => {
     const blocks = document.getElementById("previewEmail").contentWindow.document.querySelectorAll("[sh-layout]");
     for (let i = 0; i < blocks.length; i++) {
@@ -177,21 +137,14 @@ const setButtons = () => {
 
             checkForControls(blocks[i], i);
         })
-
-        /*setStrings(i, blocks[i]);*/
     }
+    makeSpacersEditable();
 }
 
 const hitSave = () => {
     let saveBtn = document.getElementById("saveEmail");
     saveBtn.click();
 }
-
-/*
-let remove_linebreaks = (str) => {
-    let str2 = str.replace(/'/g, "\\'");
-    return str2.replace(/[\r\n]+/gm, "");
-}*/
 
 let removeEscapes = (str) => {
     let str3 = str.replace(/\\n/g, '');
@@ -281,12 +234,34 @@ const setEmail = () => {
     }))
 }
 
-window.setTimeout(main, 1000);
-/*
-let layouts = document.getElementById('previewEmail').contentWindow.document.getElementsByClassName("email-block-controls-clone");
-for (let i = 0; i < layouts.length; i++) { layouts[i].outerHTML += '<a title="Duplicate Block" class="single-control testBtn" style="color: rgb(0, 0, 238);">test</a>'; };
-let testBtn = document.getElementsByClassName("testBtn"); for (let i = 0; i < testBtn.length; i++) { testBtn[i].addEventListener("click", () => { console.log("clicked button") }) };
-*/
+const makeSpacersEditable = () => {
+    const spacers = document.getElementById("previewEmail").contentWindow.document.querySelectorAll("[sh-spacer]");
 
+    for (let i = 0; i < spacers.length; i++) {
+        const height = spacers[i].height;
+        spacers[i].outerHTML = editableSpaceHtml(height);
+    }
+}
 
-
+const editableSpaceHtml = (height) => {
+    return `<td><div sh-content-block="Button" sh-version="2" class="ui-draggable">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" 
+                style="padding-left: 0px; padding-right: 0px; mso-padding-left-alt: 0px; mso-padding-right-alt: 0px;">
+                    <tbody>
+                        <tr>
+                            <td height="${height}" width="100%" style="font-size: 1px; line-height: 1px;" class="non-editable">
+                                <br>
+                            </td>
+                        </tr>
+                    </tbody>
+            </table>
+        <div class="email-block-controls" style="display: none;">
+            <div class="email-block-controls-inner">
+            <a title="Drag to Reorder" class="single-control email-block-controls-move"><i class="icon-move"></i></a>
+            <a title="Edit Block" class="single-control email-block-controls-edit"><i class="icon-pencil"></i></a>
+            <a title="Duplicate Block" class="single-control email-block-controls-clone"><i class="icon-copy"></i></a>
+            
+            <a title="Delete Block" class="single-control email-block-controls-delete"><i class="icon-trash"></i></a>
+        </div>
+    </div><td>`;
+}
