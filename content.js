@@ -2,6 +2,10 @@ const parse = (html) => {
     let name = 'shspRecyclerBlockStorage0001';
     let base = html;
     let test = base.search(name);
+    if (test === -1) {
+        console.log("Oops, looks like the storage template doesn't exist.");
+        return;
+    }
     console.log(test);
     let found = base.substr(test, (test + name.length));
     console.log(found);

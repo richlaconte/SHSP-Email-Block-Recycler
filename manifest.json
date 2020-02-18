@@ -2,11 +2,7 @@
     "name": "SHSP Email Block Recycler",
     "version": "0.1",
     "description": "Save email blocks to use in different emails within SharpSpring.",
-    "permissions": [
-        "activeTab",
-        "declarativeContent",
-        "storage"
-    ],
+    "permissions": [],
     "content_scripts": [
         {
             "matches": [
@@ -18,12 +14,7 @@
             ]
         }
     ],
-    "background": {
-        "scripts": [
-            "background.js"
-        ],
-        "persistent": true
-    },
+    "background": {},
     "options_page": "options.html",
     "manifest_version": 2
 }
